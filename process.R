@@ -16,8 +16,8 @@ if (length(args)==0) {
   cat("MR results simulation script
       
       Usage: Rscript <this_script>.R <numCores> <numIter> [<data_path>]
-      * <numCores> : number of cores to use to run n metaCCA analyses in paralell
-      * <numIter> : number of simulation iterations to run (1 iter = 1 min on 1 core)
+      * <numCores> : number of cores to use to run analyses in paralell
+      * <numIter> : number of simulation iterations to run (1 iter takes 1 min on 1 core)
       * <data_path>: data directory; if not supplied, will assumed that data folder in the project folder should be used
       
       ")
@@ -102,7 +102,6 @@ colnames(results) <- c("EO_total", "EM_total", "MO_total", "EO_direct", 'MO_dire
 
 print("Saving results... ")
 time1 <- gsub(" ", "_", now())
-
 write_tsv(results, paste0(data_path, "/IGF1_MR-simulations_iters", numIter,"_", time1,".tsv")) 
 
 
