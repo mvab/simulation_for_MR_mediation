@@ -83,11 +83,10 @@ simulate_results <- function(n_iter, snps_m, beta_em, beta_mo){
 
   output_df<-rbind(data.frame(), output_vector)
   
-  print(paste0("Simulation iteration number ", n_iter, "completed at:", gsub(" ", "_", Sys.time())  ))
+  print(paste0("Simulation iteration number ", n_iter, " completed at:",  now()  ))
   
   return(output_df)
 }
-
 
 n_iter = seq(1:numIter)
 results_list <- mclapply(n_iter, simulate_results, mc.cores = numCores,
@@ -100,12 +99,12 @@ results_list <- mclapply(n_iter, simulate_results, mc.cores = numCores,
 results <- bind_rows(lapply(results_list, as.data.frame.list))
 colnames(results) <- c("EO_total", "EM_total", "MO_total", "EO_direct", 'MO_direct')
 
+time1 <- gsub(" ", "_", now() )
+time_total <- interval(time0, time1)
+print(paste0("Total time taken to complete ", numIter, " iterations: ", time_total ))
+
 print("Saving results... ")
-time1 <- gsub(" ", "_", now())
 write_tsv(results, paste0(data_path, "/IGF1_MR-simulations_iters", numIter,"_", time1,".tsv")) 
 
-
-time_total <- interval(time0, time1)
-print(paste0("Total time taken to complete ", n_iter, " iterations: ", time_total ))
 
 
