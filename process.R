@@ -83,7 +83,7 @@ simulate_results <- function(n_iter, snps_m, beta_em, beta_mo){
 
   output_df<-rbind(data.frame(), output_vector)
   
-  print(paste0("Simulation iteration number ", n_iter, " completed at:",  now()  ))
+  print(paste("Simulation iteration number", n_iter, "completed at:",  now()  ))
   
   return(output_df)
 }
@@ -100,7 +100,7 @@ results <- bind_rows(lapply(results_list, as.data.frame.list))
 colnames(results) <- c("EO_total", "EM_total", "MO_total", "EO_direct", 'MO_direct')
 
 time1 <- gsub(" ", "_", now() )
-time_total <- interval(time0, time1)
+time_total <- as.duration(interval(time0, time1))
 print(paste0("Total time taken to complete ", numIter, " iterations: ", time_total ))
 
 print("Saving results... ")
