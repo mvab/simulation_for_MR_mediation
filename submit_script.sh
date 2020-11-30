@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# input from command line
+cores=16
+iters=500
+data_path="/newhome/ny19205/mr_simulation/data/"
+
+# request resources:
+#PBS -l nodes=1:ppn=16
+#PBS -l walltime=24:00:00
+
+## not using: #PBS -q himem
+
+
+# Define working directory
+export WORK_DIR=$HOME/mr_simulation
+
+# load latest R
+module add languages/R-3.5.1-ATLAS-gcc-6.1
+
+# on compute node, change directory to 'submission directory':
+cd $WORK_DIR
+
+
+echo JOB ID: $PBS_JOBID
+echo Working Directory: `pwd`
+echo Start Time: `date`
+
+# run it, timing it:
+time Rscript process.R  ${cores}  ${iters} ${data_path}
+
+echo End Time: `date`
