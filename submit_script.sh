@@ -2,8 +2,8 @@
 
 # input from command line
 cores=16
-iters=500
-data_path="/newhome/ny19205/mr_simulation/data/"
+iters=3
+data_path="/newhome/ny19205/simulation_for_MR_mediation/data/"
 
 # request resources:
 #PBS -l nodes=1:ppn=16
@@ -13,7 +13,7 @@ data_path="/newhome/ny19205/mr_simulation/data/"
 
 
 # Define working directory
-export WORK_DIR=$HOME/mr_simulation
+export WORK_DIR=$HOME/simulation_for_MR_mediation
 
 # load latest R
 module add languages/R-3.5.1-ATLAS-gcc-6.1
