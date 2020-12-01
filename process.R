@@ -153,20 +153,20 @@ colnames(results) <- c("EO_total_beta", "EM_total_beta", "MO_total_beta", "EO_di
 
 
 # calculate indirect beta using difference and product method (x2)
-results <- results %>% 
+results2 <- results %>% 
       # mediation using difference method and PoE for SE calulation
-      mutate(indirect_b_difference = difference_method('EO_total_beta', 'EO_direct_beta')) %>% 
-      mutate(indirect_se_difference_PoE = propagation_of_errors_method('EO_total_se', 'EO_direct_se')) %>% 
+      mutate(indirect_b_difference = difference_method(EO_total_beta, EO_direct_beta)) %>% 
+      mutate(indirect_se_difference_PoE = propagation_of_errors_method(EO_total_se, EO_direct_se)) %>% 
   
       # mediation using Product method (total effect of two steps) and both PoE and Delta for SE calculation
-      mutate(indirect_b_product_v1 = product_method('EM_total_beta', 'MO_total_beta')) %>% 
-      mutate(indirect_se_product_v1_PoE = propagation_of_errors_method('EM_total_se', 'MO_total_se')) %>% 
-      mutate(indirect_se_product_v1_delta = delta_method('EM_total_beta','EM_total_se','MO_total_beta', 'MO_total_se')) %>% 
+      mutate(indirect_b_product_v1 = product_method(EM_total_beta, MO_total_beta)) %>% 
+      mutate(indirect_se_product_v1_PoE = propagation_of_errors_method(EM_total_se, MO_total_se)) %>% 
+      mutate(indirect_se_product_v1_delta = delta_method(EM_total_beta,EM_total_se,MO_total_beta, MO_total_se)) %>% 
                                     
       # mediation using Product method (total effect of EM and direct effect of MO) and both PoE and Delta for SE calculation
-      mutate(indirect_b_product_v2 = product_method('EM_total_beta', 'MO_direct_beta'))
-      mutate(indirect_se_product_v2_PoE = propagation_of_errors_method('EM_total_se', 'MO_direct_se')) %>% 
-      mutate(indirect_se_product_v2_delta = delta_method('EM_total_beta','EM_total_se','MO_direct_beta', 'MO_direct_se'))
+      mutate(indirect_b_product_v2 = product_method(EM_total_beta, MO_direct_beta)) %>% 
+      mutate(indirect_se_product_v2_PoE = propagation_of_errors_method(EM_total_se, MO_direct_se)) %>% 
+      mutate(indirect_se_product_v2_delta = delta_method(EM_total_beta,EM_total_se,MO_direct_beta, MO_direct_se))
         
 
 # also save input parameters to file
