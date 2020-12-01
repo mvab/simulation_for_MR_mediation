@@ -66,8 +66,8 @@ datagen <- function(snps_m, beta_em, beta_mo){
 ## this code below generates the data and conducts the main IVW estimates
 #requires packages simulateGP and dplyr
 #devtools::install_github("explodecomputer/simulateGP")
-library(simulateGP)
-library(dplyr)
+#library(simulateGP)
+#library(dplyr)
 
 #this is what you need to add to to get the proportion mediated and loop over to run the simulation 
 #get it all working with no loop and then 2 loops before you try to run it with lots of loops. 
@@ -87,7 +87,7 @@ MR.dat <- datagen(snps_m, beta_em, beta_mo)
 
 #analysis
 ex.dat <- MR.dat[1:100,]
-med.dat <- MR.dat[101:100+snps_m,]
+med.dat <- MR.dat[101:as.numeric(100+snps_m),]
 
 #IVW estimation - exposure -> outcome 
 lm(ex.dat$Out_beta~-1+ex.dat$Ex_beta, weights = 1/ex.dat$Out_se^2)
