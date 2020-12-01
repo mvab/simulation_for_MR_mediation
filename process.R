@@ -52,7 +52,7 @@ beta_em = as.numeric(input[i, "effect_exp_med"])
 #effect of the mediator on the outcome
 beta_mo = as.numeric(input[i, "effect_med_out"])
 
-
+### FUNCTIONS
 
 simulate_results <- function(n_iter, snps_m, beta_em, beta_mo){
   
@@ -88,6 +88,30 @@ simulate_results <- function(n_iter, snps_m, beta_em, beta_mo){
   return(output_df)
 }
 
+
+difference_method <- function(EO_beta_total, EO_beta_direct){
+  # calculate indirect effect beta
+  
+  # INDIRECT = TOTAL (of exposure, univ) - DIRECT (of exposure, mvmr)
+  indirect_beta = EO_beta_total - EO_beta_direct
+  return(indirect_beta)
+}
+
+product_method <- function(EM_beta, MO_beta){
+  # calculate indirect effect beta
+  
+  # method 1
+  # INDIRECT = TOTAL (exposure -> mediator) x TOTAL (mediator -> outcome)
+  # method 2
+  # INDIRECT = TOTAL (exposure -> mediator) x DIRECT (of mediator -> outcome , mvmr) 
+  
+  indirect_beta =  EM_beta * MO_beta
+  return(indirect_beta)
+}
+
+### MAIN code
+
+# simulate results and produce summary effects `numIter` times
 n_iter = seq(1:numIter)
 results_list <- mclapply(n_iter, simulate_results, mc.cores = numCores,
                                 snps_m = snps_m,
@@ -100,15 +124,16 @@ results <- bind_rows(lapply(results_list, as.data.frame.list))
 colnames(results) <- c("EO_total", "EM_total", "MO_total", "EO_direct", 'MO_direct')
 
 
-# here will need to call function to generate SE
-
-
+# calculate indirect beta using difference and product method (x2)
+results <- results %>% 
+      mutate(indirect_b_difference = difference_method(EO_total, EO_direct)) %>% 
+      mutate(indirect_b_product_v1 = product_method(EM_total, MO_total)) %>% 
+      mutate(indirect_b_product_v2 = product_method(EM_total, MO_direct))
 
 # also save input parameters to file
 results$param_snps_m <- snps_m
 results$param_beta_em <- beta_em
 results$param_beta_mo <- beta_mo
-
 
 
 time1 <- gsub(" ", "_", now() )
