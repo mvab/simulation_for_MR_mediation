@@ -65,21 +65,28 @@ simulate_results <- function(n_iter, snps_m, beta_em, beta_mo){
   
   #IVW estimation - exposure -> outcome 
   eo <- lm(ex.dat$Out_beta ~ -1+ex.dat$Ex_beta, weights = 1/ex.dat$Out_se^2)
-  eo_value <- eo$coefficients %>% as.numeric()
+  eo_beta <- summary(eo)$coefficients[1] 
+  eo_se <- summary(eo)$coefficients[2] 
   
   #IVW estimation - exposure -> mediator
   em <- lm(ex.dat$Med_beta ~ -1+ex.dat$Ex_beta, weights = 1/ex.dat$Med_se^2)
-  em_value <- em$coefficients %>% as.numeric()
+  em_beta <- summary(em)$coefficients[1] 
+  em_se <- summary(em)$coefficients[2] 
   
   #IVW estimation - mediator -> outcome
   mo <- lm(med.dat$Out_beta ~ -1+med.dat$Med_beta, weights = 1/med.dat$Out_se^2)
-  mo_value <- mo$coefficients %>% as.numeric()
+  mo_beta <- summary(mo)$coefficients[1] 
+  mo_se <- summary(mo)$coefficients[2] 
   
   #IVW - MVMR estimation
   emo <- lm(MR.dat$Out_beta~-1+MR.dat$Ex_beta+MR.dat$Med_beta, weights = 1/MR.dat$Out_se^2)
-  emo_value <- emo$coefficients %>% as.numeric()
+  emo_betas <- summary(emo)$coefficients[,1] %>% as.numeric()
+  emo_ses <- summary(emo)$coefficients[,2] %>% as.numeric()
   
-  output_vector <-  data.frame(eo_value, em_value, mo_value, emo_value[1], emo_value[2])  
+  
+  
+  output_vector <-  data.frame(eo_beta, em_beta, mo_beta, emo_betas[1], emo_betas[2],
+                               eo_se, em_se, mo_se, emo_ses[1], emo_ses[2])  
   
   output_df<-rbind(data.frame(), output_vector)
   
@@ -109,6 +116,26 @@ product_method <- function(EM_beta, MO_beta){
   return(indirect_beta)
 }
 
+
+delta_method <- function(EM_beta, EM_se, MO_beta, MO_se){
+
+  # SE of INDIRECT effect (applied with product method) 
+  delta_se = sqrt((MO_beta^2 * EM_se^2) + (EM_beta^2 * MO_se^2))
+  return(delta_se)
+}
+
+propagation_of_errors_method <- function(total_se, direct_se){
+  
+  # SE of INDIRECT effect (applied with difference method) = sqrt(SE TOTAL^2 + SE DIRECT^2) 
+  # SE of INDIRECT effect (applied with product method) = sqrt(SE EM^2 + SE MO^2) 
+  
+  indirect_se = sqrt(total_se^2 + direct_se^2)
+  return(indirect_se)
+  
+}
+
+
+
 ### MAIN code
 
 # simulate results and produce summary effects `numIter` times
@@ -121,14 +148,26 @@ results_list <- mclapply(n_iter, simulate_results, mc.cores = numCores,
 
 # convert list of vectors to df
 results <- bind_rows(lapply(results_list, as.data.frame.list))
-colnames(results) <- c("EO_total", "EM_total", "MO_total", "EO_direct", 'MO_direct')
+colnames(results) <- c("EO_total_beta", "EM_total_beta", "MO_total_beta", "EO_direct_beta", 'MO_direct_beta',
+                       "EO_total_se", "EM_total_se", "MO_total_se", "EO_direct_se", 'MO_direct_se')
 
 
 # calculate indirect beta using difference and product method (x2)
 results <- results %>% 
-      mutate(indirect_b_difference = difference_method(EO_total, EO_direct)) %>% 
-      mutate(indirect_b_product_v1 = product_method(EM_total, MO_total)) %>% 
-      mutate(indirect_b_product_v2 = product_method(EM_total, MO_direct))
+      # mediation using difference method and PoE for SE calulation
+      mutate(indirect_b_difference = difference_method('EO_total_beta', 'EO_direct_beta')) %>% 
+      mutate(indirect_se_difference_PoE = propagation_of_errors_method('EO_total_se', 'EO_direct_se')) %>% 
+  
+      # mediation using Product method (total effect of two steps) and both PoE and Delta for SE calculation
+      mutate(indirect_b_product_v1 = product_method('EM_total_beta', 'MO_total_beta')) %>% 
+      mutate(indirect_se_product_v1_PoE = propagation_of_errors_method('EM_total_se', 'MO_total_se')) %>% 
+      mutate(indirect_se_product_v1_delta = delta_method('EM_total_beta','EM_total_se','MO_total_beta', 'MO_total_se')) %>% 
+                                    
+      # mediation using Product method (total effect of EM and direct effect of MO) and both PoE and Delta for SE calculation
+      mutate(indirect_b_product_v2 = product_method('EM_total_beta', 'MO_direct_beta'))
+      mutate(indirect_se_product_v2_PoE = propagation_of_errors_method('EM_total_se', 'MO_direct_se')) %>% 
+      mutate(indirect_se_product_v2_delta = delta_method('EM_total_beta','EM_total_se','MO_direct_beta', 'MO_direct_se'))
+        
 
 # also save input parameters to file
 results$param_snps_m <- snps_m
