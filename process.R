@@ -153,7 +153,7 @@ colnames(results) <- c("EO_total_beta", "EM_total_beta", "MO_total_beta", "EO_di
 
 
 # calculate indirect beta using difference and product method (x2)
-results2 <- results %>% 
+results <- results %>% 
       # mediation using difference method and PoE for SE calulation
       mutate(indirect_b_difference = difference_method(EO_total_beta, EO_direct_beta)) %>% 
       mutate(indirect_se_difference_PoE = propagation_of_errors_method(EO_total_se, EO_direct_se)) %>% 
