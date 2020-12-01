@@ -60,19 +60,19 @@ simulate_results <- function(n_iter, snps_m, beta_em, beta_mo){
   MR.dat <- datagen(snps_m, beta_em, beta_mo)
 
   #analysis
-  ex.dat <- MR.dat[1:100,]
-  med.dat <- MR.dat[101:100+snps_m,]
+  ex.dat <- MR.dat[1:100, ]
+  med.dat <- MR.dat[101:as.numeric(100+snps_m), ] 
   
   #IVW estimation - exposure -> outcome 
-  eo <- lm(ex.dat$Out_beta~-1+ex.dat$Ex_beta, weights = 1/ex.dat$Out_se^2)
+  eo <- lm(ex.dat$Out_beta ~ -1+ex.dat$Ex_beta, weights = 1/ex.dat$Out_se^2)
   eo_value <- eo$coefficients %>% as.numeric()
   
   #IVW estimation - exposure -> mediator
-  em <- lm(ex.dat$Med_beta~-1+ex.dat$Ex_beta, weights = 1/ex.dat$Med_se^2)
+  em <- lm(ex.dat$Med_beta ~ -1+ex.dat$Ex_beta, weights = 1/ex.dat$Med_se^2)
   em_value <- em$coefficients %>% as.numeric()
   
   #IVW estimation - mediator -> outcome
-  mo <- lm(med.dat$Out_beta~-1+med.dat$Med_beta, weights = 1/med.dat$Out_se^2)
+  mo <- lm(med.dat$Out_beta ~ -1+med.dat$Med_beta, weights = 1/med.dat$Out_se^2)
   mo_value <- mo$coefficients %>% as.numeric()
   
   #IVW - MVMR estimation
@@ -80,7 +80,7 @@ simulate_results <- function(n_iter, snps_m, beta_em, beta_mo){
   emo_value <- emo$coefficients %>% as.numeric()
   
   output_vector <-  data.frame(eo_value, em_value, mo_value, emo_value[1], emo_value[2])  
-
+  
   output_df<-rbind(data.frame(), output_vector)
   
   print(paste("Simulation iteration number", n_iter, "completed at:",  now()  ))
@@ -98,6 +98,18 @@ results_list <- mclapply(n_iter, simulate_results, mc.cores = numCores,
 # convert list of vectors to df
 results <- bind_rows(lapply(results_list, as.data.frame.list))
 colnames(results) <- c("EO_total", "EM_total", "MO_total", "EO_direct", 'MO_direct')
+
+
+# here will need to call function to generate SE
+
+
+
+# also save input parameters to file
+results$param_snps_m <- snps_m
+results$param_beta_em <- beta_em
+results$param_beta_mo <- beta_mo
+
+
 
 time1 <- gsub(" ", "_", now() )
 time_total <- as.duration(interval(time0, time1))
