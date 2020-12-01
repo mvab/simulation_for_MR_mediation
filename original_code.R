@@ -2,10 +2,11 @@
 
 datagen <- function(snps_m, beta_em, beta_mo){
   #function to generate the data
-  beta_eo <- -0.4 - (beta_em*beta_mo)
+  beta_eo <- -0.4 - (beta_em*beta_mo)    # -0.4 is the fixed total effect 
   
-  n=100000
-  snps_e = 100
+  n=100000 # sample size for indiv level data for which we are generating sumstas for
+  snps_e = 100 # exp n SNPs fixed in simulation (rounded number of real exposure 105)
+  
   effs_E <- (rnorm(snps_e,0.05,0.01))
   effs_M <- (rnorm(snps_m,0.05,0.01))
   
@@ -22,7 +23,7 @@ datagen <- function(snps_m, beta_em, beta_mo){
   v_x22 <- rnorm(n,0,1)
   C2 <- rnorm(n,0,1)
   
-    Exposure <- G_e%*%effs_E +  0.8*C  + v_x1
+    Exposure <- G_e%*%effs_E +  0.8*C  + v_x1 # 0.8 confounder - may leave out? (i.e use 1) # vx2*1-beta_em
     mediator <- G_m%*%effs_M + C + beta_em*Exposure + v_x2
     
     Exposure2 <- G2_e%*%effs_E +  0.8*C2  + v_x12
@@ -39,8 +40,8 @@ datagen <- function(snps_m, beta_em, beta_mo){
   
   for(i in 1:(snps_e+snps_m)){
     a <- summary(lm(Exposure ~ G[,i]))
-    b <- summary(lm(mediator~G[,i]))
-    c <- summary(lm(outcome~G2[,i]))
+    b <- summary(lm(mediator ~ G[,i]))
+    c <- summary(lm(outcome ~ G2[,i]))
     MR.dat[i,"Ex_beta"] <- a$coefficient[2,1]
     MR.dat[i,"Ex_se"] <- a$coefficient[2,2]
     MR.dat[i,"Ex_p"] <- a$coefficient[2,4]
@@ -54,8 +55,6 @@ datagen <- function(snps_m, beta_em, beta_mo){
     MR.dat[i,"Out_p"] <- c$coefficient[2,4]
     
   }
-  
-  
   return(MR.dat)
 }
 
