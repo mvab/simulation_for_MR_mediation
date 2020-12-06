@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # input from command line
-mediator_row="$1"  # chromosome to process; add ' -F "mediator_row #" ' at the end to submission script, e.g. -F 2
+mediator_row="$1"  # chromosome to process; add ' -F "mediator_row #" ' at the end to submission script, e.g. -F "2"
 cores=16
-iters=10
+iters=1000
 data_path="/newhome/ny19205/simulation_for_MR_mediation/data/"
 
 # request resources:
