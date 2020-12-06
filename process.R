@@ -184,7 +184,7 @@ time_total <- as.duration(interval(time0, time1))
 print(paste0("Total time taken to complete ", numIter, " iterations: ", time_total ))
 
 print("Saving results... ")
-write_tsv(results, paste0(data_path, "/", mediaotor, "_MR-simulations_iters", numIter,"_", time1,".tsv")) 
+write_tsv(results, paste0(data_path, "/", mediator, "_MR-simulations_iters", numIter,"_", time1,".tsv")) 
 
 
 
