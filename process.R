@@ -15,24 +15,27 @@ if (length(args)==0) {
   
   cat("MR results simulation script
       
-      Usage: Rscript <this_script>.R <numCores> <numIter> [<data_path>]
+      Usage: Rscript <this_script>.R <numCores> <numIter> [<data_path>] [<mediator_row>]
       * <numCores> : number of cores to use to run analyses in paralell
       * <numIter> : number of simulation iterations to run (1 iter takes 1 min on 1 core)
       * <data_path>: data directory; if not supplied, will assumed that data folder in the project folder should be used
+      * <mediator_row>: row number in the input file: i.e. which mediaotr to process; if not supplied, first mediator will be used
       
       ")
-  stop("Must provide at least 6 arguments")
+  stop("Must provide at least 2 arguments")
   
-} else if ( length(args) == 3 ){
+} else if ( length(args) == 4 ){
   
   numCores <- args[1] 
   numIter <- args[2] 
   data_path <- args[3]
+  mediator_row <-  args[4]
   
 } else {
   numCores <- args[1]
   numIter <- args[2] 
   data_path <- "todo"
+  mediator_row <- 1
 }
 
 time0 <- gsub(" ", "_", now())
@@ -40,17 +43,17 @@ print(paste0("====== Time 0: ", time0))
 
 input <-read_csv(paste0(data_path, "/simulation_input.csv"))
 
-# just trying for first mediator
-i = 1
+# mediator name 
+mediator = as.character(input[mediator_row, "mediator"])
 
 #number of snps for the mediator
-snps_m = as.numeric(input[i, "mediator_SNPs"])
+snps_m = as.numeric(input[mediator_row, "mediator_SNPs"])
 
 #effect of the exposure on the mediator
-beta_em = as.numeric(input[i, "effect_exp_med"])
+beta_em = as.numeric(input[mediator_row, "effect_exp_med"])
 
 #effect of the mediator on the outcome
-beta_mo = as.numeric(input[i, "effect_med_out"])
+beta_mo = as.numeric(input[mediator_row, "effect_med_out"])
 
 ### FUNCTIONS
 
@@ -175,12 +178,13 @@ results$param_beta_em <- beta_em
 results$param_beta_mo <- beta_mo
 
 
-time1 <- gsub(" ", "_", now() )
+time1 <- gsub(":", "-",
+              gsub(" ", "_", now() ))
 time_total <- as.duration(interval(time0, time1))
 print(paste0("Total time taken to complete ", numIter, " iterations: ", time_total ))
 
 print("Saving results... ")
-write_tsv(results, paste0(data_path, "/IGF1_MR-simulations_iters", numIter,"_", time1,".tsv")) 
+write_tsv(results, paste0(data_path, "/", mediaotor, "_MR-simulations_iters", numIter,"_", time1,".tsv")) 
 
 
 
