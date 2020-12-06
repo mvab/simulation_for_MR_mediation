@@ -1,8 +1,8 @@
 ﻿exposure,mediator,outcome,effect_exp_med,effect_med_out,mediator_SNPs
-childhood body size,IGF,breast cancer,-0.240201359,0.080970057,253
+childhood body size,IGF1,breast cancer,-0.240201359,0.080970057,253
 childhood body size,SHBG,breast cancer,-0.185752669,-0.031302466,182
-childhood body size,Testosterone (total),breast cancer,-0.013088583,0.135878853,113
-childhood body size,Testosterone (free),breast cancer,0.115069961,0.129222626,121
-childhood body size,Testosterone (bioavailable),breast cancer,0.08654179,0.114620782,116
-childhood body size,Age at menarche,breast cancer,-0.791329723,-0.01930253,66
-childhood body size,Age at menopause,breast cancer,0.018289449,0.049926662,38
+childhood body size,testosterone_total,breast cancer,-0.013088583,0.135878853,113
+childhood body size,testosterone_free,breast cancer,0.115069961,0.129222626,121
+childhood body size,testosterone_bioavailable,breast cancer,0.08654179,0.114620782,116
+childhood body size,age_at_menarche,breast cancer,-0.791329723,-0.01930253,66
+childhood body size,age_at_menopause,breast cancer,0.018289449,0.049926662,38
