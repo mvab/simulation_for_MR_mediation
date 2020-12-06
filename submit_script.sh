@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # input from command line
+mediator_row="$1"  # chromosome to process; add ' -F "mediator_row #" ' at the end to submission script, e.g. -F 2
 cores=16
-iters=3
+iters=10
 data_path="/newhome/ny19205/simulation_for_MR_mediation/data/"
 
 # request resources:
@@ -27,6 +28,6 @@ echo Working Directory: `pwd`
 echo Start Time: `date`
 
 # run it, timing it:
-time Rscript process.R  ${cores}  ${iters} ${data_path}
+time Rscript process.R  ${cores}  ${iters} ${data_path}  $mediator_row 
 
 echo End Time: `date`
