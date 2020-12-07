@@ -3,7 +3,7 @@ library(readr)
 library(tibble)
 
 
-file <- "data/IGF1_MR-simulations_iters1000_2020-12-07_03-20-55.tsv"
+file <- "data/age_at_menopause_MR-simulations_iters1000_2020-12-07_00-50-56.tsv"
 data <- read_tsv(file) 
 colnames(data)
 
@@ -18,7 +18,7 @@ out <- rbind(means, sds) %>%
   rownames_to_column('measure')
 colnames(out)[2:3] <- c("mean", "sd")
 
-out %>%  write_tsv(paste0(strsplit(file, "_")[[1]][1], "_summary.tsv"))
+out %>%  write_tsv(paste0(strsplit(file, "MR")[[1]][1], "summary.tsv"))
 out %>% print()
 
 #     measure                          mean           sd
