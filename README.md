@@ -7,4 +7,4 @@ To submit simulation script on BC3: `qsub submit_script.sh`
  - specify cores, iters, mediator to process in .sh
  - to set mediator row: `qsub submit_script.sh -F "2"` 
 
-`submit_script.sh` runs `process.R` (uses frinctions from `original_code.R`). Then, the simulation output is summaried in `review_output.R`.
+`submit_script.sh` runs `process.R` (uses functions from `original_code.R`). Then, the simulation output is in  summaries in `review_output.R`.
