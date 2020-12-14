@@ -2,7 +2,7 @@ library(dplyr)
 library(readr)
 library(tibble)
 
-
+# do this for each
 file <- "data/age_at_menopause_MR-simulations_iters1000_2020-12-07_00-50-56.tsv"
 data <- read_tsv(file) 
 colnames(data)
@@ -63,3 +63,25 @@ out %>%
 # 6        indirect_b_product_v2          NA 0.001902260
 # 7   indirect_se_product_v2_PoE 0.015120794          NA
 # 8 indirect_se_product_v2_delta 0.001943369          NA
+
+
+
+## loading all saved summary tables together
+
+filenames <- list.files("data", pattern="*_summary.tsv", full.names=TRUE)
+
+load_tidy_summary <- function(file){
+  read_tsv(file) %>% 
+      mutate(mediator = strsplit( strsplit(file, "/")[[1]][2], "_sum")[[1]][1]) %>% 
+      filter(grepl("indirect", measure)) %>% 
+      mutate(mean = ifelse(grepl("b_", measure), NA, round(mean,4)),
+             sd = ifelse(grepl("se_", measure), NA, round(sd, 4)))
+}
+
+ldf <- lapply(filenames, load_tidy_summary)   
+tidy<-bind_rows(ldf)
+tidy %>% write_tsv("data/all_summaries_tidy.tsv")
+
+
+
+
